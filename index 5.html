@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>明日科技 | 国际橡塑展互动平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+            background: #f5f7fb;
+            color: #1e293b;
+            padding: 20px 16px 48px;
+            line-height: 1.4;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .lang-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .lang-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #334155;
+        }
+        .lang-btn.active {
+            background: #1e40af;
+            border-color: #1e40af;
+            color: white;
+        }
+        .hero {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .hero h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .hero p {
+            color: #475569;
+            margin-top: 8px;
+        }
+        .categories-wrapper {
+            overflow-x: auto;
+            white-space: nowrap;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .categories {
+            display: inline-flex;
+            gap: 12px;
+        }
+        .cat-btn {
+            background: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .cat-btn.active {
+            background: #0f3b5c;
+            color: white;
+            border-color: #0f3b5c;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 8px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            transform: translateY(-4px);
+        }
+        .card-img {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: #eef2ff;
+        }
+        .card-content {
+            padding: 18px 16px 20px;
+            flex: 1;
+        }
+        .product-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+        .product-desc {
+            font-size: 0.85rem;
+            color: #475569;
+            line-height: 1.45;
+        }
+        .badge-category {
+            display: inline-block;
+            font-size: 0.7rem;
+            background: #eef2ff;
+            padding: 4px 10px;
+            border-radius: 30px;
+            margin-bottom: 12px;
+            color: #2563eb;
+        }
+        .cert-card .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #f8fafc;
+            padding: 8px;
+            box-sizing: border-box;
+            aspect-ratio: auto;
+        }
+        .plastics-group {
+            background: white;
+            border-radius: 28px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .group-header {
+            background: #f8fafc;
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #0f3b5c;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .group-header i {
+            transition: transform 0.2s;
+        }
+        .group-header.collapsed i {
+            transform: rotate(-90deg);
+        }
+        .group-content {
+            padding: 0;
+            overflow-x: auto;
+            transition: max-height 0.3s ease;
+        }
+        .group-content.collapsed {
+            display: none;
+        }
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        .product-table th, .product-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: top;
+        }
+        .product-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #1e40af;
+        }
+        .product-table tr:hover {
+            background: #fafbff;
+        }
+        @media (max-width: 640px) {
+            .product-table th, .product-table td {
+                padding: 8px 6px;
+                font-size: 0.75rem;
+            }
+            .group-header {
+                font-size: 1rem;
+                padding: 12px 16px;
+            }
+        }
+        .contact-section {
+            background: white;
+            border-radius: 32px;
+            padding: 32px 28px;
+            margin-top: 48px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .contact-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 28px;
+            text-align: center;
+            color: #0f3b5c;
+        }
+        .contact-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: space-between;
+        }
+        .contact-info {
+            flex: 2;
+            min-width: 240px;
+        }
+        .contact-qr {
+            flex: 1;
+            min-width: 160px;
+            text-align: center;
+            border-left: 1px solid #eef2f6;
+            padding-left: 32px;
+        }
+        .contact-qr img {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .qr-label {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 500;
+        }
+        .contact-item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.95rem;
+            color: #334155;
+            flex-wrap: wrap;
+        }
+        .contact-item i {
+            width: 36px;
+            height: 36px;
+            background: #eef2ff;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #1e40af;
+            font-size: 1rem;
+        }
+        .contact-item a {
+            color: #1e40af;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .social-links {
+            display: flex;
+            justify-content: flex-start;
+            gap: 24px;
+            margin-top: 24px;
+        }
+        .social-links a {
+            color: #475569;
+            font-size: 1.6rem;
+            transition: color 0.2s;
+        }
+        .social-links a:hover {
+            color: #1e40af;
+        }
+        @media (max-width: 700px) {
+            .contact-wrapper {
+                flex-direction: column;
+            }
+            .contact-qr {
+                border-left: none;
+                padding-left: 0;
+                border-top: 1px solid #eef2f6;
+                padding-top: 28px;
+                margin-top: 8px;
+            }
+            .contact-qr img {
+                width: 120px;
+                height: 120px;
+            }
+            .social-links {
+                justify-content: center;
+            }
+        }
+        footer {
+            text-align: center;
+            margin-top: 32px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 40px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="lang-bar">
+        <button class="lang-btn" data-lang="zh">🇨🇳 中文</button>
+        <button class="lang-btn" data-lang="en">🇬🇧 English</button>
+    </div>
+    <div class="hero">
+        <h1 id="hero-title">✨ 功能母粒 · 改性塑料</h1>
+        <p id="hero-sub">探索我们的全系列产品、资质荣誉与公司实力</p>
+    </div>
+    <div class="categories-wrapper">
+        <div class="categories" id="categoriesContainer"></div>
+    </div>
+    <div id="productsContainer"></div>
+
+    <!-- 新版联系方式板块 -->
+    <div class="contact-section" id="contactSection">
+        <div class="contact-title" id="contactTitle">📞 联系我们</div>
+        <div class="contact-wrapper" style="justify-content: center;">
+            <div class="contact-info" style="flex: none; width: 100%; max-width: 500px; margin: 0 auto;">
+                <div class="contact-item-list" id="contactItemList" style="align-items: flex-start;"></div>
+                <div class="social-links" id="socialLinks" style="justify-content: center;">
+                    <a href="#" target="_blank"><i class="fab fa-weixin"></i></a>
+                    <a href="https://wa.me/8615268806699" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                    <a href="mailto:ZLC@mrjt.cn"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>© 2026 国际橡塑展互动平台 | 杭州明日新材料科技有限公司</footer>
+</div>
+<script>
+    // ======================== 数据定义 ========================
+    const CATEGORIES = [
+        { key: "all", label: { zh: "全部产品", en: "All Products" } },
+        { key: "Masterbatch", label: { zh: "功能母粒", en: "Functional Masterbatch" } },
+        { key: "ModifiedPlastics", label: { zh: "改性塑料", en: "Modified Plastics" } },
+        { key: "Equipment", label: { zh: "设施设备", en: "Facility & Equipment" } },
+        { key: "Certificates", label: { zh: "资质荣誉", en: "Certificates & Honors" } }
+    ];
+
+    // 功能母粒数据（共14条）
+    const MASTERBATCH = [
+        { id: 1, title: { zh: "PPA母粒 MR510", en: "PPA Masterbatch MR510" }, desc: { zh: "减少模口积料，减少晶点颗粒，提升薄膜透明度，提高产量。", en: "Reduce die buildup, minimize fish eyes and particles, enhance film transparency, increase output." }, imageUrl: "https://nimg.ws.126.net/?url=http%3A%2F%2Fdingyue.ws.126.net%2F2026%2F0227%2Fff02e212j00tb3qoh00o0d000v900v9p.jpg&thumbnail=660x2147483647&quality=80&type=jpg" },
+        { id: 2, title: { zh: "真正的无氟PPA母粒 MR510 WF", en: "Genuine Fluoride-Free PPA Masterbatch MR510 WF" }, desc: { zh: "符合欧盟PFAS要求，替代传统含氟PPA，效果显著。", en: "Compliant with EU PFAS, replaces traditional fluorine-containing PPA with remarkable effect." }, imageUrl: "https://img03.71360.com/w3/d59o1g/20250310/ae7a3455c66d3b1637aedad181580dc3.png?w=600" },
+        { id: 3, title: { zh: "PE开口母粒 MR550/D", en: "PE Opening Masterbatch MR550/D (Alternative to Mitsui EAZ-10)" }, desc: { zh: "防止薄膜粘连，易打开。", en: "Prevent film blocking, easy opening." }, imageUrl: "https://pic.rmb.bdstatic.com/bjh/events/39b036983bcf321602ba2c082ee0c2d4.jpeg@h_1280" },
+        { id: 4, title: { zh: "PE爽滑母粒 SE580", en: "PE Slip Masterbatch SE580" }, desc: { zh: "保持薄膜良好爽滑度，不易析出。", en: "Keep film good slip property, not easy to bloom." }, imageUrl: "https://img0.baidu.com/it/u=4014581045,4091082820&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500" },
+        { id: 5, title: { zh: "PE抗静电母粒 MR5600", en: "PE Antistatic Masterbatch MR5600" }, desc: { zh: "表面电阻1010Ω，长效稳定。", en: "Surface resistance 1010Ω, long-term stability." }, imageUrl: "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2FO1CN01YLkMB61Gc5BYnw1p8_%21%21955590642-0-cib.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1778224623&t=422eaa4da35313eb26c2704e96f65c78" },
+        { id: 6, title: { zh: "PE开口母粒 MR2002W", en: "PE Opening Masterbatch MR2002W" }, desc: { zh: "防止薄膜粘连，易打开，卫材中表现优异，耐高温。", en: "Prevent film blocking, easy opening, excellent in sanitary materials, high temperature resistant." }, imageUrl: "https://t12.baidu.com/it/u=4195440999,2157681734&fm=199&app=68&f=JPEG?w=750&h=1012&s=F9F8AB559BB7E9DC0E65F15F0300C033" },
+        { id: 7, title: { zh: "抗老化母粒 MR1094", en: "Anti-aging Masterbatch MR1094" }, desc: { zh: "中和紫外线产生的自由基，防止薄膜腐蚀。", en: "Neutralizes free radicals from UV, prevents film corrosion." }, imageUrl: "https://pics1.baidu.com/feed/48540923dd54564e83e274280681a48dd0584f8e.jpeg@f_auto?token=3752ac55c6838123253ab17a3d2dfcf3" },
+        { id: 8, title: { zh: "抗UV母粒 KLH-21", en: "UV Resistant Masterbatch KLH-21" }, desc: { zh: "反射/折射紫外线，阻隔紫外线进入。", en: "Reflects/refracts UV rays, blocks UV penetration." }, imageUrl: "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2F2017%2F031%2F152%2F4520251130_247313155.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1778224720&t=f4c53c1290503ca7f6ab5a96f17a1c0c" },
+        { id: 9, title: { zh: "PE干性抗静电母粒 MR5601", en: "PE Dry Antistatic Masterbatch MR5601" }, desc: { zh: "复合制袋后效果持久，不易粘粉末。", en: "Durable effect after lamination, not easy to stick to powder." }, imageUrl: "https://www.ppm-sz.cn/UploadFiles/202411151712489267.jpg" },
+        { id: 10, title: { zh: "PP开口母粒 KP560", en: "PP Opening Masterbatch KP560" }, desc: { zh: "防止薄膜粘连，易打开。", en: "Prevent film blocking, easy opening." }, imageUrl: "https://27309768.s21i.faiusr.com/2/ABUIABACGAAgu4bihQYop62qtwUw2AQ4hAY.jpg" },
+        { id: 11, title: { zh: "PP爽滑母粒 SP570", en: "PP Slip Masterbatch SP570" }, desc: { zh: "保持薄膜良好爽滑度。", en: "Keep film good slip property." }, imageUrl: "https://t12.baidu.com/it/u=2108788618,1336451199&fm=199&app=68&f=JPEG?w=480&h=480&s=B52AD815F7415347347834D9030080BB" },
+        { id: 12, title: { zh: "易撕加工母粒 MRYS-C35", en: "Easy Tear Processing Masterbatch MRYS-C35" }, desc: { zh: "双向直线易撕，不影响透明度。", en: "Bidirectional linear easy tear, no effect on transparency." }, imageUrl: "https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcbu01.alicdn.com%2Fimg%2Fibank%2FO1CN01bXIvrZ1qin4N4nbFG_%21%212215430745530-0-cib.jpg&refer=http%3A%2F%2Fcbu01.alicdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1778309036&t=40e8945600bb9fdf884e6a8588848c07" },
+        { id: 13, title: { zh: "PE开口-爽滑一体母粒 MRSE-208", en: "PE Integrated Opening and Slip Masterbatch MRSE-208" }, desc: { zh: "开口爽滑复配，低析出，适用于农膜、气柱袋等。", en: "Opening and slip compound, low blooming, for agricultural films, air column bags, etc." }, imageUrl: "https://t12.baidu.com/it/u=2334762428,291503654&fm=30&app=106&f=JPEG?w=640&h=575&s=5C0317749162D94D465C35DB030080B1" },
+        { id: 14, title: { zh: "尼龙开口母粒 KA560", en: "Nylon Opening Masterbatch KA560" }, desc: { zh: "防止薄膜粘连，分散性好，透明度高，不产生焦料。", en: "Prevent film blocking, good dispersibility, high transparency, no coke at die." }, imageUrl: "https://t12.baidu.com/it/u=4195440999,2157681734&fm=199&app=68&f=JPEG?w=750&h=1012&s=F9F8AB559BB7E9DC0E65F15F0300C033" }
+    ];
+
+    const EQUIPMENT = [
+        { id: 1, title: { zh: "德国科倍隆双螺杆挤出机", en: "Coperion Twin-Screw Extruder (Germany)" }, desc: { zh: "双侧喂料，柔性高，产量高，混合均匀，专为改性塑料设计。", en: "Dual side feeding, high flexibility, high output, excellent mixing for modified plastics." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQhp10ui5JCHRYti84TWMGBrRhdpoAAC6iUAAqcowVZu-mxyDStz4TsE.jpg" },
+        { id: 2, title: { zh: "德国布拉本达失重称", en: "Brabender Loss-in-Weight Feeder (Germany)" }, desc: { zh: "高精度连续喂料，保证产品批次稳定性。", en: "High-precision continuous feeding, ensures product batch stability." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyRRp1076NeQak_LYUx6IXCSApFsUpAACEyYAAqcowVb1PecQ-qa7_DsE.png" },
+        { id: 3, title: { zh: "德国马格切粒机", en: "MAAG Pelletizer (Germany)" }, desc: { zh: "水下造粒技术，颗粒均匀，自动化程度高。", en: "Underwater pelletizing technology, uniform pellets, high automation." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQlp10ukZGW29a9t73V4y3WA1nxjWgAC6yUAAqcowVZUUeEQ1CKfTjsE.jpg" },
+        { id: 4, title: { zh: "科里时全自动输送系统", en: "Collix Automatic Conveying System" }, desc: { zh: "密闭气力输送，无粉尘污染，高效节能。", en: "Closed pneumatic conveying, dust-free, energy efficient." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQtp10urD3X1BYSBnr7eBURzf6tFzAAC7iUAAqcowVaDj3qAHRCESDsE.jpg" },
+        { id: 5, title: { zh: "上海冰嘉翻转混料机", en: "Shanghai Bingjia Tumbling Mixer" }, desc: { zh: "高效翻转混合，均匀无死角，适合多种配方。", en: "Efficient tumbling mixing, uniform without dead corners, suitable for various formulations." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQpp10un4-VVVuKrB_eVhtWOsV4R2wAC7CUAAqcowVZ2gXTZX_04ujsE.jpg" },
+        { id: 6, title: { zh: "三禾精工全自动包装线", en: "Sanhe Seiko Fully Automatic Packaging Line" }, desc: { zh: "高速定量包装，自动码垛，提升生产效率。", en: "High-speed quantitative packaging, automatic palletizing, improves production efficiency." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQ1p10uwLkBocT6rzMWKC6xFUNB7JAAC8CUAAqcowVa86ugcTpLfwDsE.jpg" }
+    ];
+
+    // 改性塑料分组数据（表格行）
+    const PLASTICS_GROUPS = [
+        { groupKey: "PA6", groupName: { zh: "改性PA6", en: "Modified PA6" }, items: [
+            { grade: "1005GF8", desc: { zh: "30GF红磷阻燃", en: "30GF Red Phosphorus FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "车用连接器、充电桩底座", en: "Automotive connectors, charging pile base" } },
+            { grade: "1005GF4", desc: { zh: "30GF磷氮阻燃", en: "30GF P-N FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "车用连接器、线圈骨架", en: "Automotive connectors, coil bobbin" } },
+            { grade: "1005GF2", desc: { zh: "30GF溴系阻燃", en: "30GF Brominated FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "控制盒开关", en: "Control box switch" } },
+            { grade: "1000F6", desc: { zh: "无卤阻燃", en: "Halogen-free FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "接插件、卡扣", en: "Connectors, clips" } },
+            { grade: "1009G", desc: { zh: "50GF", en: "50GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "后视镜座、空调出风口", en: "Rearview mirror base, AC vent" } },
+            { grade: "1007G", desc: { zh: "40GF", en: "40GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "车窗导轨、隔离泵壳体", en: "Window guide rail, isolation pump housing" } },
+            { grade: "1005G", desc: { zh: "30GF", en: "30GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "减震器部件、雷达壳体、隔离泵壳体、电器骨架、电动工具、线圈骨架、办公座椅配件", en: "Shock absorber parts, radar housing, isolation pump housing, electrical framework, power tools, coil bobbin, office chair parts" } },
+            { grade: "1002G", desc: { zh: "15GF", en: "15GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "减震器部件、尾门撑杆护套", en: "Shock absorber parts, tailgate strut cover" } }
+        ] },
+        { groupKey: "PA66", groupName: { zh: "改性PA66", en: "Modified PA66" }, items: [
+            { grade: "1105GF8", desc: { zh: "30GF红磷阻燃", en: "30GF Red Phosphorus FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "储能电池外壳", en: "Energy storage battery housing" } },
+            { grade: "1105GF6", desc: { zh: "30GF氮系阻燃", en: "30GF Nitrogen FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "MCB外壳、继电器底座", en: "MCB housing, relay base" } },
+            { grade: "1105GF4", desc: { zh: "30GF磷氮阻燃", en: "30GF P-N FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "仪表盘总成配件、储能电池外壳、车用连接器、充电桩外壳、充电桩底座、充电枪枪头", en: "Dashboard assembly parts, energy storage battery housing, automotive connectors, charging pile housing, charging pile base, charging gun head" } },
+            { grade: "1105GF2", desc: { zh: "30GF溴系阻燃", en: "30GF Brominated FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "接插件、电动工具", en: "Connectors, power tools" } },
+            { grade: "1100F6", desc: { zh: "无卤阻燃", en: "Halogen-free FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "仪表盘总成配件、储能电池外壳", en: "Dashboard assembly parts, energy storage battery housing" } },
+            { grade: "1100F1", desc: { zh: "溴系阻燃", en: "Brominated FR" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "接插件", en: "Connectors" } },
+            { grade: "1100ST", desc: { zh: "POE", en: "POE" }, type: { zh: "增韧", en: "Toughened" }, application: { zh: "扎带、卡扣", en: "Cable ties, clips" } },
+            { grade: "1109G", desc: { zh: "50GF", en: "50GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "空调出风口、隔离泵壳体", en: "AC vent, isolation pump housing" } },
+            { grade: "1106G", desc: { zh: "35GF", en: "35GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "发动机进气歧管、减震器部件", en: "Engine intake manifold, shock absorber parts" } },
+            { grade: "1105G", desc: { zh: "30GF", en: "30GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "减震器部件、车窗导轨、烤箱配件、接插件、电动工具、线圈骨架", en: "Shock absorber parts, window guide rail, oven parts, connectors, power tools, coil bobbin" } }
+        ] },
+        { groupKey: "PC", groupName: { zh: "改性PC", en: "Modified PC" }, items: [
+            { grade: "3003G F0", desc: { zh: "20GF", en: "20GF" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "光学镜头支架", en: "Optical lens holder" } },
+            { grade: "3001G F0", desc: { zh: "10GF", en: "10GF" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "继电器底座、电子支架", en: "Relay base, electronic bracket" } },
+            { grade: "3001G", desc: { zh: "10GF", en: "10GF" }, type: { zh: "增强", en: "Reinforced" }, application: { zh: "继电器外壳", en: "Relay housing" } },
+            { grade: "3010 F0", desc: { zh: "磷酸盐", en: "Phosphate" }, type: { zh: "阻燃", en: "FR" }, application: { zh: "充电桩外壳、开关面板", en: "Charging pile housing, switch panel" } },
+            { grade: "3000 F0", desc: { zh: "磷酸盐", en: "Phosphate" }, type: { zh: "透明阻燃", en: "Transparent FR" }, application: { zh: "电表箱视窗、透明板材", en: "Meter box window, transparent sheet" } },
+            { grade: "3000M F0", desc: { zh: "钛白粉", en: "Titanium dioxide" }, type: { zh: "遮光阻燃", en: "Light-blocking FR" }, application: { zh: "灯具反光杯", en: "Lamp reflector cup" } }
+        ] },
+        { groupKey: "PCAlloy", groupName: { zh: "改性PC合金", en: "Modified PC Alloy" }, items: [
+            { grade: "3408 F9", desc: { zh: "BDP阻燃", en: "BDP FR" }, type: { zh: "阻燃合金", en: "FR Alloy" }, application: { zh: "储能电池外壳、充电桩外壳、充电枪枪头", en: "Energy storage battery housing, charging pile housing, charging gun head" } },
+            { grade: "3413U", desc: { zh: "PC:ABS=3:7", en: "PC:ABS=3:7" }, type: { zh: "合金", en: "Alloy" }, application: { zh: "电器外壳", en: "Electrical housing" } },
+            { grade: "3405U", desc: { zh: "PC:ABS=7:3", en: "PC:ABS=7:3" }, type: { zh: "合金", en: "Alloy" }, application: { zh: "电器外壳", en: "Electrical housing" } }
+        ] }
+    ];
+
+    // ======================= 认证/荣誉/专利列表（按含金量排序） =======================
+    const CERTIFICATES = [
+        { id: 1, title: { zh: "UL 黄卡认证", en: "UL Yellow Card Certification" }, desc: { zh: "阻燃材料安全认证，确保产品满足国际阻燃标准。", en: "Flame retardant material safety certification, ensures compliance with international flame retardant standards." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyJJp10FZFI52OtlnhCxEY_ht16XYFQACUSUAAqcowValBnLUR-UdzDsE.png" },
+        { id: 2, title: { zh: "IATF 16949:2016 质量管理体系", en: "IATF 16949:2016 Quality Management" }, desc: { zh: "汽车行业质量管理体系认证，改性工程塑料粒子的设计和生产。", en: "Automotive industry quality management certification, design and production of modified engineering plastic pellets." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyHNp1z68cLAoZelZAemFEoqj2F6QAQACJCUAAqcowVasOISUyzC_OTsE.png" },
+        { id: 3, title: { zh: "ISO 9001:2015 质量管理体系", en: "ISO 9001:2015 Quality Management" }, desc: { zh: "国际质量管理体系认证，改性工程塑料粒子的设计和生产。", en: "International quality management certification, design and production of modified engineering plastic pellets." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQVp10uZlQZxGAWSDfr41ppIHOVApQAC5yUAAqcowVYOeUKUhO0PIzsE.png" },
+        { id: 4, title: { zh: "Global Recycled Standard 4.0 (GRS 4.0)", en: "Global Recycled Standard 4.0 (GRS 4.0)" }, desc: { zh: "消费后回收材料(PC0035)与消费前回收材料(PC0041)加工认证。", en: "Certified for processed post-consumer materials (PC0035) and processed pre-consumer materials (PC0041)." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyJVp10F9Fx1BHGZJywI8PKK0Yup0IgACVSUAAqcowVZo2Is2QUGtijsE.png" },
+        { id: 5, title: { zh: "ISO 14001:2015 环境管理体系", en: "ISO 14001:2015 Environmental Management" }, desc: { zh: "符合GB/T24001-2016标准，改性塑料粒子设计生产及相关管理活动。", en: "Compliant with GB/T24001-2016, design, production and related management of modified plastic pellets." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyJdp10GD6EswlKf1_lcdQaLEwiBSLQACVyUAAqcowVaR3oJJIOKeqjsE.png" },
+        { id: 6, title: { zh: "浙江省工业新产品 - PBAT基高阻隔仿生纳米复合全生物降解薄膜专用改性料", en: "Zhejiang Industrial New Product - PBAT High-Barrier Bio-degradable Film Modifier" }, desc: { zh: "省级工业新产品，证书编号：202209A03376-20221103-01918。", en: "Provincial industrial new product, certificate No.: 202209A03376-20221103-01918." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyJRp10F7CBaYCT7NX3VDzk8GRqJd6gACVCUAAqcowVYxWaaJPCO3OTsE.png" },
+        { id: 7, title: { zh: "浙江省工业新产品 - 高灼热丝起燃温度氮系阻燃尼龙改性材料", en: "Zhejiang Industrial New Product - High Glow Wire Ignition Temperature Nitrogen FR Nylon Modifier" }, desc: { zh: "省级工业新产品，证书编号：202209A03404-20221103-01928。", en: "Provincial industrial new product, certificate No.: 202209A03404-20221103-01928." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyJhp10GV05tbfj-O-mGuJAq-BBUcOwACWCUAAqcowVb5jhKgLBvATTsE.png" },
+        { id: 8, title: { zh: "科学技术成果登记 - PBAT基高阻隔仿生纳米复合全生物降解薄膜专用改性料", en: "Scientific Achievement Registration - PBAT High-Barrier Bio-degradable Film Modifier" }, desc: { zh: "浙江省科学技术成果，登记号：DJ10100202ZY0445。", en: "Zhejiang scientific and technological achievement, registration No.: DJ10100202ZY0445." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyLlp10RdheJXKCdNzITL5lRwbbONQwAChSUAAqcowVbgDbTyUd2-3TsE.png" },
+        { id: 9, title: { zh: "科学技术成果登记 - 高灼热丝起燃温度氮系阻燃尼龙改性材料", en: "Scientific Achievement Registration - High Glow Wire Ignition Temperature Nitrogen FR Nylon Modifier" }, desc: { zh: "浙江省科学技术成果，登记号：DJ10100202ZY0444。", en: "Zhejiang scientific and technological achievement, registration No.: DJ10100202ZY0444." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyLdp10Q0-oweNqEmUOREUntdWPiBxQACgyUAAqcowVbzq4sOnyGoWjsE.png" },
+        { id: 10, title: { zh: "发明专利 - 一种聚酰胺材料及其制备方法", en: "Invention Patent - Polyamide Material and Its Preparation Method" }, desc: { zh: "专利号：ZL202211259347.9，授权公告日：2023年05月09日。", en: "Patent No.: ZL202211259347.9, Authorization Date: 2023-05-09." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyLZp10QlAAGAZ-pMRlw2W4UAAV6rrpdDAAKCJQACpyjBVmiwEw66ojJUOwQ.png" },
+        { id: 11, title: { zh: "实用新型专利 - 一种柔性连接结构", en: "Utility Model Patent - Flexible Connection Structure" }, desc: { zh: "专利号：ZL202222682740.0，授权公告日：2023年02月03日。", en: "Patent No.: ZL202222682740.0, Authorization Date: 2023-02-03." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQZp10ubo41WBjxmkin_U3J4_u6-rgAC6CUAAqcowVYxfiTuyDn47TsE.png" },
+        { id: 12, title: { zh: "实用新型专利 - 一种物料大包装分装机构", en: "Utility Model Patent - Bulk Material Sub-packaging Mechanism" }, desc: { zh: "专利号：ZL202222687306.1，授权公告日：2023年01月24日。", en: "Patent No.: ZL202222687306.1, Authorization Date: 2023-01-24." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyQdp10ufwk4YisUmrU0hPg7r_ChjWQAC6SUAAqcowVbJOXaoONEbTzsE.png" },
+        { id: 13, title: { zh: "实用新型专利 - 一种塑料颗粒自动分筛装置", en: "Utility Model Patent - Automatic Plastic Particle Sieving Device" }, desc: { zh: "专利号：ZL202222680653.1，授权公告日：2023年02月24日。", en: "Patent No.: ZL202222680653.1, Authorization Date: 2023-02-24." }, imageUrl: "https://img.remit.ee/api/file/BQACAgUAAyEGAASHRsPbAAESyLhp10RFb4NzZrzdQaQ4XAkKxpGVqgAChCUAAqcowVbKKiAHPlCaNDsE.png" }
+    ];
+
+    // 联系方式多语言内容（用于左侧列表）
+    const CONTACT_ITEMS = {
+        zh: [
+            { icon: "fas fa-building", text: "杭州明日新材料科技有限公司" },
+            { icon: "fas fa-map-marker-alt", text: "浙江省杭州市萧山区经济技术开发区" },
+            { icon: "fas fa-phone-alt", text: "+86 153 8237 4187 （微信）" },
+            { icon: "fab fa-whatsapp", text: "+86 152 6880 6699 (WhatsApp)", link: "https://wa.me/8615268806699" },
+            { icon: "fas fa-envelope", text: "ZLC@mrjt.cn", link: "mailto:info@mingri.com" },
+            { icon: "fas fa-globe", text: "http://www.mingri-polymer.com/", link: "http://www.mingri-polymer.com/" }
+        ],
+        en: [
+            { icon: "fas fa-building", text: "Hangzhou MingRi New Material Technology Co., Ltd." },
+            { icon: "fas fa-map-marker-alt", text: "Economic Development Zone, Xiaoshan District, Hangzhou" },
+            { icon: "fas fa-phone-alt", text: "+86 152 6880 6699 (WeChat)" },
+            { icon: "fab fa-whatsapp", text: "+86 152 6880 6699 (WhatsApp)", link: "https://wa.me/8615268806699" },
+            { icon: "fas fa-envelope", text: "ZLC@mrjt.cn", link: "mailto:info@mingri.com" },
+            { icon: "fas fa-globe", text: "http://www.mingri-polymer.com/", link: "http://www.mingri-polymer.com/" }
+        ]
+    };
+
+    // 全局
+    let currentLang = "zh";
+    let currentCategory = "all";
+
+    function getLocalized(obj, field) {
+        if (!obj) return "";
+        if (typeof obj === 'string') return obj;
+        return obj[currentLang] || obj["zh"] || "";
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // 渲染类别按钮
+    function renderCategories() {
+        const container = document.getElementById("categoriesContainer");
+        if (!container) return;
+        container.innerHTML = "";
+        CATEGORIES.forEach(cat => {
+            const btn = document.createElement("button");
+            btn.className = "cat-btn";
+            if (currentCategory === cat.key) btn.classList.add("active");
+            btn.textContent = getLocalized(cat.label);
+            btn.dataset.key = cat.key;
+            btn.addEventListener("click", () => {
+                currentCategory = cat.key;
+                renderCategories();
+                renderProducts();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+            container.appendChild(btn);
+        });
+    }
+
+    // 渲染改性塑料分组表格（完整版，不限制数量）
+    function renderPlasticsGroupFull(group) {
+        const groupName = getLocalized(group.groupName);
+        const items = group.items;
+        const thGrade = currentLang === "zh" ? "牌号" : "Grade";
+        const thDesc = currentLang === "zh" ? "描述" : "Description";
+        const thType = currentLang === "zh" ? "类别" : "Type";
+        const thApp = currentLang === "zh" ? "应用领域" : "Application";
+
+        let tableRows = '';
+        items.forEach(item => {
+            const desc = getLocalized(item.desc);
+            const type = getLocalized(item.type);
+            const app = getLocalized(item.application);
+            tableRows += `
+                <tr>
+                    <td style="white-space: nowrap;">${escapeHtml(item.grade)}</td>
+                    <td>${escapeHtml(desc)}</td>
+                    <td>${escapeHtml(type)}</td>
+                    <td>${escapeHtml(app)}</td>
+                </tr>
+            `;
+        });
+        return `
+            <div class="plastics-group" data-group="${group.groupKey}">
+                <div class="group-header">
+                    <span>${escapeHtml(groupName)}</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="group-content">
+                    <table class="product-table">
+                        <thead>
+                            <tr><th>${thGrade}</th><th>${thDesc}</th><th>${thType}</th><th>${thApp}</th></tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    // 渲染改性塑料分组表格（限制每个组显示前limit条）
+    function renderPlasticsGroupLimited(group, limit) {
+        const groupName = getLocalized(group.groupName);
+        const items = group.items.slice(0, limit);
+        const thGrade = currentLang === "zh" ? "牌号" : "Grade";
+        const thDesc = currentLang === "zh" ? "描述" : "Description";
+        const thType = currentLang === "zh" ? "类别" : "Type";
+        const thApp = currentLang === "zh" ? "应用领域" : "Application";
+
+        let tableRows = '';
+        items.forEach(item => {
+            const desc = getLocalized(item.desc);
+            const type = getLocalized(item.type);
+            const app = getLocalized(item.application);
+            tableRows += `
+                <tr>
+                    <td style="white-space: nowrap;">${escapeHtml(item.grade)}</td>
+                    <td>${escapeHtml(desc)}</td>
+                    <td>${escapeHtml(type)}</td>
+                    <td>${escapeHtml(app)}</td>
+                </tr>
+            `;
+        });
+        return `
+            <div class="plastics-group" data-group="${group.groupKey}">
+                <div class="group-header">
+                    <span>${escapeHtml(groupName)}</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="group-content">
+                    <table class="product-table">
+                        <thead>
+                            <tr><th>${thGrade}</th><th>${thDesc}</th><th>${thType}</th><th>${thApp}</th></tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    // 渲染联系方式（左侧列表）
+    function renderContact() {
+        const itemsData = CONTACT_ITEMS[currentLang];
+        const container = document.getElementById("contactItemList");
+        if (!container) return;
+        container.innerHTML = "";
+        itemsData.forEach(item => {
+            const div = document.createElement("div");
+            div.className = "contact-item";
+            const icon = document.createElement("i");
+            icon.className = item.icon;
+            div.appendChild(icon);
+            if (item.link) {
+                const a = document.createElement("a");
+                a.href = item.link;
+                a.target = "_blank";
+                a.rel = "noopener noreferrer";
+                a.innerText = item.text;
+                div.appendChild(a);
+            } else {
+                const span = document.createElement("span");
+                span.innerText = item.text;
+                div.appendChild(span);
+            }
+            container.appendChild(div);
+        });
+        const qrLabel = document.getElementById("qrLabel");
+        if (qrLabel) {
+            qrLabel.innerText = currentLang === "zh" ? "微信扫一扫 · 联系客服" : "Scan WeChat · Contact Us";
+        }
+    }
+
+    // 渲染主内容
+    function renderProducts() {
+        const container = document.getElementById("productsContainer");
+        if (!container) return;
+
+        if (currentCategory === "all") {
+            let html = '';
+            // 功能母粒 - 前6个
+            html += `<div style="margin-bottom: 32px;"><h2 style="font-size:1.4rem; margin-bottom:16px; color:#0f3b5c;">${getLocalized(CATEGORIES.find(c=>c.key==='Masterbatch').label)}</h2><div class="products-grid">`;
+            MASTERBATCH.slice(0,6).forEach(p => {
+                html += `
+                    <div class="product-card">
+                        <img class="card-img" src="${p.imageUrl}" loading="lazy" onerror="this.src='https://picsum.photos/id/1/400/260'">
+                        <div class="card-content">
+                            <div class="badge-category">${getLocalized(CATEGORIES.find(c=>c.key==='Masterbatch').label)}</div>
+                            <div class="product-title">${escapeHtml(getLocalized(p.title))}</div>
+                            <div class="product-desc">${escapeHtml(getLocalized(p.desc))}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+            // 改性塑料分组表格 - 每个组只显示前3个
+            html += `<div style="margin-bottom: 32px;"><h2 style="font-size:1.4rem; margin-bottom:16px; color:#0f3b5c;">${getLocalized(CATEGORIES.find(c=>c.key==='ModifiedPlastics').label)}</h2>`;
+            PLASTICS_GROUPS.forEach(group => {
+                html += renderPlasticsGroupLimited(group, 3);
+            });
+            html += `</div>`;
+            // 设施设备 - 前4个
+            html += `<div style="margin-bottom: 32px;"><h2 style="font-size:1.4rem; margin-bottom:16px; color:#0f3b5c;">${getLocalized(CATEGORIES.find(c=>c.key==='Equipment').label)}</h2><div class="products-grid">`;
+            EQUIPMENT.slice(0,3).forEach(equip => {
+                html += `
+                    <div class="product-card">
+                        <img class="card-img" src="${equip.imageUrl}" loading="lazy">
+                        <div class="card-content">
+                            <div class="badge-category">${getLocalized(CATEGORIES.find(c=>c.key==='Equipment').label)}</div>
+                            <div class="product-title">${escapeHtml(getLocalized(equip.title))}</div>
+                            <div class="product-desc">${escapeHtml(getLocalized(equip.desc))}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+            // 资质荣誉 - 前3个
+            html += `<div><h2 style="font-size:1.4rem; margin-bottom:16px; color:#0f3b5c;">${getLocalized(CATEGORIES.find(c=>c.key==='Certificates').label)}</h2><div class="products-grid">`;
+            CERTIFICATES.slice(0,3).forEach(cert => {
+                html += `
+                    <div class="product-card cert-card">
+                        <img class="card-img" src="${cert.imageUrl}" loading="lazy">
+                        <div class="card-content">
+                            <div class="badge-category">${getLocalized(CATEGORIES.find(c=>c.key==='Certificates').label)}</div>
+                            <div class="product-title">${escapeHtml(getLocalized(cert.title))}</div>
+                            <div class="product-desc">${escapeHtml(getLocalized(cert.desc))}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+            container.innerHTML = html;
+            attachCollapseEvents();
+            return;
+        }
+
+        if (currentCategory === "Masterbatch") {
+            let html = `<div class="products-grid">`;
+            MASTERBATCH.forEach(p => {
+                html += `
+                    <div class="product-card">
+                        <img class="card-img" src="${p.imageUrl}" loading="lazy">
+                        <div class="card-content">
+                            <div class="badge-category">${getLocalized(CATEGORIES.find(c=>c.key==='Masterbatch').label)}</div>
+                            <div class="product-title">${escapeHtml(getLocalized(p.title))}</div>
+                            <div class="product-desc">${escapeHtml(getLocalized(p.desc))}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+            return;
+        }
+
+        if (currentCategory === "ModifiedPlastics") {
+            let html = ``;
+            PLASTICS_GROUPS.forEach(group => {
+                html += renderPlasticsGroupFull(group);
+            });
+            container.innerHTML = html;
+            attachCollapseEvents();
+            return;
+        }
+
+        if (currentCategory === "Equipment") {
+            let html = `<div class="products-grid">`;
+            EQUIPMENT.forEach(equip => {
+                html += `
+                    <div class="product-card">
+                        <img class="card-img" src="${equip.imageUrl}" loading="lazy">
+                        <div class="card-content">
+                            <div class="badge-category">${getLocalized(CATEGORIES.find(c=>c.key==='Equipment').label)}</div>
+                            <div class="product-title">${escapeHtml(getLocalized(equip.title))}</div>
+                            <div class="product-desc">${escapeHtml(getLocalized(equip.desc))}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+            return;
+        }
+
+        if (currentCategory === "Certificates") {
+            let html = `<div class="products-grid">`;
+            CERTIFICATES.forEach(cert => {
+                html += `
+                    <div class="product-card cert-card">
+                        <img class="card-img" src="${cert.imageUrl}" loading="lazy">
+                        <div class="card-content">
+                            <div class="badge-category">${getLocalized(CATEGORIES.find(c=>c.key==='Certificates').label)}</div>
+                            <div class="product-title">${escapeHtml(getLocalized(cert.title))}</div>
+                            <div class="product-desc">${escapeHtml(getLocalized(cert.desc))}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+            return;
+        }
+    }
+
+    function attachCollapseEvents() {
+        document.querySelectorAll('.group-header').forEach(header => {
+            header.removeEventListener('click', toggleGroup);
+            header.addEventListener('click', toggleGroup);
+        });
+    }
+    function toggleGroup(e) {
+        const header = e.currentTarget;
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('i');
+        if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            icon.classList.remove('fa-chevron-right');
+            icon.classList.add('fa-chevron-down');
+        } else {
+            content.classList.add('collapsed');
+            icon.classList.remove('fa-chevron-down');
+            icon.classList.add('fa-chevron-right');
+        }
+    }
+
+    function updateStaticTexts() {
+        document.querySelectorAll(".lang-btn").forEach(btn => {
+            const langVal = btn.dataset.lang;
+            if (langVal === currentLang) btn.classList.add("active");
+            else btn.classList.remove("active");
+        });
+        document.getElementById("hero-title").innerText = currentLang === "zh" ? "✨ 功能母粒 · 改性塑料" : "✨ Masterbatch & Modified Plastics";
+        document.getElementById("hero-sub").innerText = currentLang === "zh" ? "探索我们的全系列产品、资质荣誉与公司实力" : "Explore our full range of products, certificates & company strength";
+        const contactTitle = document.getElementById("contactTitle");
+        if (contactTitle) contactTitle.innerText = currentLang === "zh" ? "📞 联系我们" : "📞 Contact Us";
+        renderContact();
+    }
+
+    function refreshUI() {
+        renderCategories();
+        renderProducts();
+        updateStaticTexts();
+        localStorage.setItem("exhibition_lang", currentLang);
+    }
+
+    function initLanguageSwitcher() {
+        document.querySelectorAll(".lang-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+                const newLang = btn.dataset.lang;
+                if (newLang === currentLang) return;
+                currentLang = newLang;
+                refreshUI();
+            });
+        });
+    }
+
+    function loadPreferredLanguage() {
+        const saved = localStorage.getItem("exhibition_lang");
+        if (saved === "zh" || saved === "en") currentLang = saved;
+        else currentLang = "zh";
+        updateStaticTexts();
+    }
+
+    function init() {
+        loadPreferredLanguage();
+        initLanguageSwitcher();
+        renderCategories();
+        renderProducts();
+        updateStaticTexts();
+    }
+    init();
+</script>
+</body>
+</html>
